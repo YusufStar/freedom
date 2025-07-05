@@ -29,7 +29,7 @@ export const GET = async (req: NextRequest) => {
         },
         create: {
             id: token.accountId.toString(),
-            userID: userId,
+            userId: userId,
             accessToken: token.accessToken,
             emailAddress: accountDetails.email,
             name: accountDetails.name
