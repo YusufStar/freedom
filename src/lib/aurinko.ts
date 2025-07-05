@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import axios from "axios";
+import type { EmailMessage } from "./types";
 
 export const getAurinkoAuthUrl = async (serviceType: "Google" | "Office365" | "iCloud" | "IMAP") => {
     const { userId } = await auth()
@@ -72,3 +73,25 @@ export const getAccountDetails = async (accessToken: string) => {
         throw error
     }
 }
+
+export const getEmailDetails = async (accessToken: string, emailId: string) => {
+    try {
+        const response = await axios.get<EmailMessage>(`https://api.aurinko.io/v1/email/messages/${emailId}`, {
+            params: {
+                loadInlines: true
+            },
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error fetching email details:', error.response?.data);
+        } else {
+            console.error('Unexpected error fetching email details:', error);
+        }
+        throw error;
+    }
+}
+

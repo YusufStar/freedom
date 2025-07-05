@@ -1,3 +1,9 @@
+import Mail from "./mail";
+
 export default function MailDashboard() {
-    return <div>Mail Dashboard</div>
+    return <Mail 
+        defaultLayout={[20, 32, 48]}
+        navCollapsedSize={4}
+        defaultIsCollapsed={false}
+    />
 }
