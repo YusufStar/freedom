@@ -1,13 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Account } from "~/lib/account";
+import { syncEmailsToDatabase } from "~/lib/sync-to-db";
 import { db } from "~/server/db";
 
 export const POST = async (req: NextRequest) => {
     try {
         const { accountId, userId } = await req.json();
         if (!accountId || !userId) return NextResponse.json({ error: "Missing accountId or userId" }, { status: 400 });
-
-        console.log(`Starting initial sync for accountId: ${accountId}, userId: ${userId}`);
 
         const dbAccount = await db.account.findUnique({
             where: {
@@ -21,8 +20,6 @@ export const POST = async (req: NextRequest) => {
             return NextResponse.json({ error: "Account not found" }, { status: 404 });
         }
 
-        console.log(`Found account: ${dbAccount.emailAddress}`);
-
         const account = new Account(dbAccount.accessToken)
         const response = await account.performInitialSync()
         
@@ -32,23 +29,20 @@ export const POST = async (req: NextRequest) => {
         }
 
         const {emails, deltaToken} = response;
-        console.log(`Initial sync completed successfully. Emails synced: ${emails.length}, Delta token: ${deltaToken}`);
 
-        // await db.account.update({
-        //     where: {
-        //         id: accountId,
-        //     },
-        //     data: {
-        //         nextDeltaToken: deltaToken
-        //     }
-        // })
+        await db.account.update({
+            where: {
+                id: accountId,
+            },
+            data: {
+                nextDeltaToken: deltaToken
+            }
+        })
 
-        // await syncEmailsDatabase(emails)
+        await syncEmailsToDatabase(emails, accountId)
 
         return NextResponse.json({ 
-            success: true, 
-            emailCount: emails.length, 
-            deltaToken: deltaToken 
+            success: true
         }, { status: 200 })
     } catch (error) {
         console.error("Error in initial sync endpoint:", error);

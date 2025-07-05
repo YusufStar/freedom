@@ -40,20 +40,16 @@ export class Account {
     private async waitForAccountInitialization(maxRetries = 10, baseDelay = 2000) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                console.log(`Attempt ${attempt}: Checking if account is initialized...`);
                 const syncResponse = await this.startSync();
-                console.log(`Account is ready: ${syncResponse.ready}`);
                 return syncResponse;
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     const errorMessage = error.response?.data?.message || error.response?.data?.code || '';
-                    console.log(`Attempt ${attempt} failed:`, errorMessage);
                     
                     // If account is not initialized yet, wait and retry
                     if (errorMessage.includes('Account is not initialized yet') || errorMessage.includes('unavailable')) {
                         if (attempt < maxRetries) {
                             const delay = baseDelay * Math.pow(1.5, attempt - 1); // Exponential backoff
-                            console.log(`Waiting ${delay}ms before retry...`);
                             await new Promise(resolve => setTimeout(resolve, delay));
                             continue;
                         }
@@ -72,7 +68,6 @@ export class Account {
             
             // Wait for sync to be ready
             while (!syncResponse.ready) {
-                console.log('Sync not ready yet, waiting...');
                 await new Promise(resolve => setTimeout(resolve, 1000))
                 syncResponse = await this.startSync()
             }
@@ -97,15 +92,13 @@ export class Account {
                 }
             }
 
-            console.log('initial sync completed, we have synced', allEmails.length, 'emails')
-
             return {
                 emails: allEmails,
                 deltaToken: storedDeltaToken
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                console.log('Error during sync:', JSON.stringify(error.response?.data, null, 2))
+                console.error('Error during sync:', JSON.stringify(error.response?.data, null, 2))
             } else {
                 console.error("Failed to perform initial sync", error)
             }
