@@ -46,8 +46,18 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
 
         // 1. Upsert EmailAddress records
         const addressesToUpsert = new Map()
-        for (const address of [email.from, ...email.to, ...email.cc, ...email.bcc, ...email.replyTo]) {
-            addressesToUpsert.set(address.address, address);
+        const allAddresses = [
+            email.from,
+            ...(email.to || []),
+            ...(email.cc || []),
+            ...(email.bcc || []),
+            ...(email.replyTo || [])
+        ].filter(Boolean); // Remove any null/undefined values
+        
+        for (const address of allAddresses) {
+            if (address && address.address) {
+                addressesToUpsert.set(address.address, address);
+            }
         }
 
         const upsertedAddresses: (Awaited<ReturnType<typeof upsertEmailAddress>> | null)[] = [];
@@ -67,10 +77,10 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
             return;
         }
 
-        const toAddresses = email.to.map(addr => addressMap.get(addr.address)).filter(Boolean);
-        const ccAddresses = email.cc.map(addr => addressMap.get(addr.address)).filter(Boolean);
-        const bccAddresses = email.bcc.map(addr => addressMap.get(addr.address)).filter(Boolean);
-        const replyToAddresses = email.replyTo.map(addr => addressMap.get(addr.address)).filter(Boolean);
+        const toAddresses = (email.to || []).map(addr => addressMap.get(addr.address)).filter(Boolean);
+        const ccAddresses = (email.cc || []).map(addr => addressMap.get(addr.address)).filter(Boolean);
+        const bccAddresses = (email.bcc || []).map(addr => addressMap.get(addr.address)).filter(Boolean);
+        const replyToAddresses = (email.replyTo || []).map(addr => addressMap.get(addr.address)).filter(Boolean);
 
         // 2. Upsert Thread
         const thread = await db.thread.upsert({
@@ -116,9 +126,9 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 receivedAt: receivedAt,
                 internetMessageId: email.internetMessageId,
                 subject: email.subject,
-                sysLabels: email.sysLabels,
-                keywords: email.keywords,
-                sysClassifications: email.sysClassifications,
+                sysLabels: email.sysLabels || [],
+                keywords: email.keywords || [],
+                sysClassifications: email.sysClassifications || [],
                 sensitivity: email.sensitivity,
                 meetingMessageMethod: email.meetingMessageMethod,
                 fromId: fromAddress.id,
@@ -127,7 +137,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 bcc: { set: bccAddresses.map(a => ({ id: a!.id })) },
                 replyTo: { set: replyToAddresses.map(a => ({ id: a!.id })) },
                 hasAttachments: email.hasAttachments,
-                internetHeaders: email.internetHeaders as any,
+                internetHeaders: (email.internetHeaders || []) as any,
                 body: email.body,
                 bodySnippet: email.bodySnippet,
                 inReplyTo: email.inReplyTo,
@@ -135,7 +145,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 threadIndex: email.threadIndex,
                 nativeProperties: email.nativeProperties as any,
                 folderId: email.folderId,
-                omitted: email.omitted,
+                omitted: email.omitted || [],
                 emailLabel: emailLabelType,
             },
             create: {
@@ -148,10 +158,10 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 receivedAt: receivedAt,
                 internetMessageId: email.internetMessageId,
                 subject: email.subject,
-                sysLabels: email.sysLabels,
-                internetHeaders: email.internetHeaders as any,
-                keywords: email.keywords,
-                sysClassifications: email.sysClassifications,
+                sysLabels: email.sysLabels || [],
+                internetHeaders: (email.internetHeaders || []) as any,
+                keywords: email.keywords || [],
+                sysClassifications: email.sysClassifications || [],
                 sensitivity: email.sensitivity,
                 meetingMessageMethod: email.meetingMessageMethod,
                 fromId: fromAddress.id,
@@ -167,7 +177,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 threadIndex: email.threadIndex,
                 nativeProperties: email.nativeProperties as any,
                 folderId: email.folderId,
-                omitted: email.omitted,
+                omitted: email.omitted || [],
             }
         });
 
@@ -196,8 +206,10 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
         });
 
         // 4. Upsert Attachments
-        for (const attachment of email.attachments) {
-            await upsertAttachment(email.id, attachment);
+        if (email.attachments && Array.isArray(email.attachments)) {
+            for (const attachment of email.attachments) {
+                await upsertAttachment(email.id, attachment);
+            }
         }
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
