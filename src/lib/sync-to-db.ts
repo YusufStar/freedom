@@ -1,19 +1,26 @@
 import { Prisma } from "@prisma/client";
 import type { EmailMessage, EmailAddress, EmailAttachment } from "./types";
-import pLimit from "p-limit";
 import { db } from "~/server/db";
 
+// Helper function to safely parse dates
+function safeParseDate(dateString?: string, fallback?: string): Date {
+    if (!dateString) {
+        return fallback ? safeParseDate(fallback) : new Date();
+    }
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+        return fallback ? safeParseDate(fallback) : new Date();
+    }
+    
+    return date;
+}
+
 export async function syncEmailsToDatabase(emails: EmailMessage[], accountId: string) {
-    const limit = pLimit(10)
-
     try {
-        async function syncToDB() {
-            for (const [index, email] of emails.entries()) {
-                await upsertEmail(email, index, accountId);
-            }
+        for (const [index, email] of emails.entries()) {
+            await upsertEmail(email, index, accountId);
         }
-
-        await Promise.all([syncToDB()])
     } catch (error) {
         console.error('oopies', error)
     }
@@ -30,6 +37,12 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
         } else if (email.sysLabels.includes('draft')) {
             emailLabelType = 'draft'
         }
+
+        // Parse dates safely
+        const createdTime = safeParseDate(email.createdTime);
+        const lastModifiedTime = safeParseDate(email.lastModifiedTime, email.createdTime);
+        const sentAt = safeParseDate(email.sentAt, email.createdTime);
+        const receivedAt = safeParseDate(email.receivedAt, email.createdTime);
 
         // 1. Upsert EmailAddress records
         const addressesToUpsert = new Map()
@@ -65,7 +78,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
             update: {
                 subject: email.subject,
                 accountId,
-                lastMessageDate: new Date(email.sentAt ?? email.createdTime),
+                lastMessageDate: sentAt,
                 done: false,
                 participantIds: [...new Set([
                     fromAddress.id,
@@ -82,7 +95,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 draftStatus: emailLabelType === 'draft',
                 inboxStatus: emailLabelType === 'inbox',
                 sentStatus: emailLabelType === 'sent',
-                lastMessageDate: new Date(email.sentAt ?? email.createdTime),
+                lastMessageDate: sentAt,
                 participantIds: [...new Set([
                     fromAddress.id,
                     ...toAddresses.map(a => a!.id),
@@ -97,10 +110,10 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
             where: { id: email.id },
             update: {
                 threadId: thread.id,
-                createdTime: new Date(email.createdTime),
-                lastModifiedTime: new Date(),
-                sentAt: new Date(email.sentAt),
-                receivedAt: new Date(email.receivedAt),
+                createdTime: createdTime,
+                lastModifiedTime: lastModifiedTime,
+                sentAt: sentAt,
+                receivedAt: receivedAt,
                 internetMessageId: email.internetMessageId,
                 subject: email.subject,
                 sysLabels: email.sysLabels,
@@ -129,10 +142,10 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 id: email.id,
                 emailLabel: emailLabelType,
                 threadId: thread.id,
-                createdTime: new Date(email.createdTime),
-                lastModifiedTime: new Date(),
-                sentAt: new Date(email.sentAt),
-                receivedAt: new Date(email.receivedAt),
+                createdTime: createdTime,
+                lastModifiedTime: lastModifiedTime,
+                sentAt: sentAt,
+                receivedAt: receivedAt,
                 internetMessageId: email.internetMessageId,
                 subject: email.subject,
                 sysLabels: email.sysLabels,
