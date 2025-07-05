@@ -1,8 +1,12 @@
 import React from 'react'
+import { LinkAccountButton } from '~/components/link-account-button'
 
 function Home() {
   return (
-    <div>Home</div>
+    <div>
+      <h1>Home</h1>
+      <LinkAccountButton />
+    </div>
   )
 }
 
