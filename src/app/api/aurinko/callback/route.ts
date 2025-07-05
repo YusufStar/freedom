@@ -36,5 +36,5 @@ export const GET = async (req: NextRequest) => {
         }
     })
 
-    return NextResponse.json({ message: "Callback received" })
+    return NextResponse.redirect(new URL("/email", req.url))
 }
