@@ -16,18 +16,20 @@ model User {
     firstName    String?
     lastName     String?
     imageUrl     String?
-    accounts      Account[]
+    accounts     Account[]
 
     @@index([emailAddress])
 }
 
 model Account {
-    id     String @id @default(uuid()) @unique
+    id     String @id @unique @default(uuid())
     userId String
 
     accessToken  String @unique
     emailAddress String
     name         String
+
+    nextDeltaToken String?
 
     user User @relation(fields: [userId], references: [id])
 }

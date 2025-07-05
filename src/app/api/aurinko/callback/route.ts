@@ -1,9 +1,11 @@
 // /api/aurinko/callback
 
+import { waitUntil } from "@vercel/functions";
 import { auth } from "@clerk/nextjs/server"
 import { NextRequest, NextResponse } from "next/server"
 import { exchangeAurinkoCodeForToken, getAccountDetails } from "~/lib/aurinko";
 import { db } from "~/server/db";
+import axios from "axios";
 
 export const GET = async (req: NextRequest) => {
     const { userId } = await auth()
@@ -35,6 +37,29 @@ export const GET = async (req: NextRequest) => {
             name: accountDetails.name
         }
     })
+
+    // trigger initial sync endpoint with delay to allow account initialization
+    waitUntil(
+        (async () => {
+            try {
+                // Wait a bit before triggering sync to allow account to initialize
+                console.log('Waiting 5 seconds before triggering initial sync...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/initial-sync`, {
+                    accountId: token.accountId.toString(),
+                    userId
+                });
+                
+                console.log("Initial sync triggered successfully", response.data);
+            } catch (error) {
+                console.error("Failed to trigger initial sync", error);
+                if (axios.isAxiosError(error)) {
+                    console.error("Response data:", error.response?.data);
+                }
+            }
+        })()
+    )
 
     return NextResponse.redirect(new URL("/email", req.url))
 }
