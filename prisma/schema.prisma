@@ -11,11 +11,23 @@ datasource db {
 }
 
 model User {
-    id String @id @default(uuid())
-    emailAddress String @unique @db.VarChar(255)
-    firstName String?
-    lastName String?
-    imageUrl String?
+    id           String    @id @default(uuid())
+    emailAddress String    @unique @db.VarChar(255)
+    firstName    String?
+    lastName     String?
+    imageUrl     String?
+    accounts      Account[]
 
     @@index([emailAddress])
+}
+
+model Account {
+    id     String @id @default(uuid())
+    userID String
+
+    accessToken  String @unique
+    emailAddress String
+    name         String
+
+    user User @relation(fields: [userID], references: [id])
 }

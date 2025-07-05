@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 export const LinkAccountButton = () => {
     const handleLinkAccount = async () => {
-        const authUrl = await getAurinkoAuthUrl('Google') 
+        const authUrl = await getAurinkoAuthUrl('IMAP') 
         window.location.href = authUrl
     }
 

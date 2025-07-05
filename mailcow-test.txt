@@ -1,0 +1,153 @@
+MAILCOW MAILBOX CREATION TEST
+=============================
+
+Date: $(date)
+API Endpoint: https://mail.yusufstar.com/api/v1/add/mailbox
+
+MAILBOX DETAILS:
+----------------
+Email Address: info@yusufstar.com
+Full Name: Yusuf Yıldız
+Domain: yusufstar.com
+Local Part: info
+Password: Ab121212
+Quota: 3072 MB (3GB)
+Active: Yes
+Auth Source: mailcow
+Force Password Update: No
+TLS Enforce In: Yes
+TLS Enforce Out: Yes
+Tags: auto-created, test-user
+
+CURL COMMAND USED:
+------------------
+curl -X POST https://mail.yusufstar.com/api/v1/add/mailbox \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: 40326A-5C2028-2DF160-287FB6-B73F1E" \
+  -d '{
+    "active": "1",
+    "domain": "yusufstar.com",
+    "local_part": "info",
+    "name": "Yusuf Yıldız",
+    "authsource": "mailcow",
+    "password": "Ab121212",
+    "password2": "Ab121212",
+    "quota": "3072",
+    "force_pw_update": "0",
+    "tls_enforce_in": "1",
+    "tls_enforce_out": "1",
+    "tags": ["auto-created", "test-user"]
+  }'
+
+API RESPONSE:
+-------------
+Status: SUCCESS ✅
+
+Response JSON:
+[
+  {
+    "type": "success",
+    "log": [
+      "ratelimit",
+      "edit",
+      "mailbox",
+      {
+        "object": "info@yusufstar.com",
+        "rl_frame": "s",
+        "rl_value": ""
+      }
+    ],
+    "msg": [
+      "rl_saved",
+      "info@yusufstar.com"
+    ]
+  },
+  {
+    "type": "success",
+    "log": [
+      "mailbox",
+      "add",
+      "mailbox",
+      {
+        "active": "1",
+        "domain": "yusufstar.com",
+        "local_part": "info",
+        "name": "Yusuf Yıldız",
+        "authsource": "mailcow",
+        "password": "*",
+        "password2": "*",
+        "quota": "3072",
+        "force_pw_update": "0",
+        "tls_enforce_in": "1",
+        "tls_enforce_out": "1",
+        "tags": ["auto-created", "test-user"]
+      },
+      null
+    ],
+    "msg": [
+      "mailbox_added",
+      "info@yusufstar.com"
+    ]
+  }
+]
+
+RESULT:
+-------
+✅ Mailbox successfully created!
+✅ Email: info@yusufstar.com
+✅ Rate limit configured
+✅ All settings applied correctly
+
+IMAP ACCOUNT SIGN-IN DETAILS:
+-----------------------------
+Email: info@yusufstar.com
+Password: Ab121212
+Username: info@yusufstar.com
+IMAP Host: mail.yusufstar.com
+IMAP Port: 993
+SMTP Host: mail.yusufstar.com
+SMTP Port: 465
+Security: SSL/TLS (Secure connection)
+
+AURINKO "INVALID SCOPE" HATASI ÇÖZÜMÜ:
+------------------------------------
+Bu hata Aurinko OAuth bağlantısında yaşanır. Mailcow admin panelinde yapılacaklar:
+
+1. OAUTH/SASL AYARLARI:
+   - Admin Panel → Configuration → OAuth
+   - "Allow SASL authentication" seçeneğini AKTIF edin
+   - "Allow OAuth for IMAP/SMTP" seçeneğini AKTIF edin
+
+2. DOMAIN AYARLARI:
+   - Admin Panel → Email → Domains → yusufstar.com
+   - "Allow SASL authentication" seçeneğini AKTIF edin
+   - "Relay all recipients" seçeneğini KONTROL edin
+
+3. MAILBOX AYARLARI:
+   - Admin Panel → Email → Mailboxes → info@yusufstar.com
+   - "Force password update" seçeneğini KAPALI edin
+   - "Disable IMAP access" seçeneğini KAPALI edin
+   - "Disable SMTP access" seçeneğini KAPALI edin
+
+4. AURINKO SCOPES (Kod tarafında):
+   Kullanılan scope'lar: "Mail.Read Mail.ReadWrite Mail.Send Mail.Drafts Mail.All"
+   Bu scope'lar IMAP için uygun değil. IMAP için gereken scope'lar:
+   - "IMAP.Read"
+   - "IMAP.ReadWrite" 
+   - "SMTP.Send"
+
+5. IMAP/SMTP PROTOKOL AYARLARI:
+   - Admin Panel → System → Protocols
+   - IMAP ve SMTP protokollerinin AKTIF olduğundan emin olun
+   - Port 993 (IMAP) ve 465 (SMTP) açık olmalı
+
+6. FIREWALL/GÜVENLIK:
+   - Sunucu firewall'unda 993 ve 465 portları açık olmalı
+   - Fail2ban ayarlarını kontrol edin
+
+NOTES:
+------
+- Password fields are masked with "*" in the response for security
+- Rate limiting has been configured for this mailbox
+- Both TLS enforcement settings are active
+- Custom tags have been applied successfully 
