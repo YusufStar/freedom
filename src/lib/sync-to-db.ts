@@ -65,7 +65,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
             update: {
                 subject: email.subject,
                 accountId,
-                lastMessageDate: new Date(email.sentAt),
+                lastMessageDate: new Date(email.sentAt ?? email.createdTime),
                 done: false,
                 participantIds: [...new Set([
                     fromAddress.id,
@@ -82,7 +82,7 @@ async function upsertEmail(email: EmailMessage, index: number, accountId: string
                 draftStatus: emailLabelType === 'draft',
                 inboxStatus: emailLabelType === 'inbox',
                 sentStatus: emailLabelType === 'sent',
-                lastMessageDate: new Date(email.sentAt),
+                lastMessageDate: new Date(email.sentAt ?? email.createdTime),
                 participantIds: [...new Set([
                     fromAddress.id,
                     ...toAddresses.map(a => a!.id),
