@@ -17,6 +17,5 @@ export const POST = async (req: Request) => {
         create: { id, emailAddress, firstName, lastName, imageUrl }
     })
 
-    console.log('user created or updated')
     return NextResponse.json({ message: "User created or updated" })
 }
