@@ -8,8 +8,8 @@ export const getAurinkoAuthUrl = async (serviceType: "Google" | "Office365" | "i
     if (!userId) throw new Error("Unauthorized");
 
     // IMAP için farklı scope'lar kullan
-    const scopes = serviceType === "IMAP" 
-        ? "Mail.Read Mail.ReadWrite Mail.Send" 
+    const scopes = serviceType === "IMAP"
+        ? "Mail.Read Mail.ReadWrite Mail.Send"
         : "Mail.Read Mail.ReadWrite Mail.Send Mail.Drafts Mail.All";
 
     const params = new URLSearchParams({
@@ -31,7 +31,7 @@ export const exchangeAurinkoCodeForToken = async (code: string) => {
                 password: process.env.AURINKO_CLIENT_SECRET!
             }
         })
-        
+
         return response.data as {
             accountId: number;
             accessToken: string;
@@ -57,7 +57,10 @@ export const getAccountDetails = async (accessToken: string) => {
 
         console.log("response: ", response.data)
 
-        return response.data as {
+        return {
+            email: response.data.email,
+            name: response.data.name || response.data.email
+        } as {
             email: string;
             name: string;
         }
