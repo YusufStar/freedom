@@ -55,11 +55,9 @@ export const getAccountDetails = async (accessToken: string) => {
             }
         })
 
-        console.log("response: ", response.data)
-
         return {
             email: response.data.email,
-            name: response.data.name || response.data.email
+            name: response.data.name || response.data.email || "Unknown"
         } as {
             email: string;
             name: string;
