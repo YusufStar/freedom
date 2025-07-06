@@ -91,7 +91,7 @@ export function AccountSwitcher({
             } catch (error) {
               toast.error((error as Error).message)
             }
-          }} className="relative flex hover:bg-gray-50 w-full cursor-pointer items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+          }} className="relative flex hover:bg-accent w-full cursor-pointer items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
             <Plus className="size-4 mr-1" />
             Add account
           </div>

@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist } from "next/font/google";
+import { ThemeProvider } from "~/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -21,11 +22,19 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geist.variable} antialiased`}>
-        <body>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+      <html lang="en" className={`${geist.variable} antialiased`} suppressHydrationWarning>
+        <body suppressHydrationWarning>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+          >
+            <TRPCReactProvider>
+              {children}
+            </TRPCReactProvider>
+          </ThemeProvider>
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkProvider >
   );
 }

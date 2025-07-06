@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { Separator } from "~/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { AccountSwitcher } from "./account-switcher";
+import { Sidebar } from "./sidebar";
+import ThreadList from "./thread-list";
+import ThreadDisplay from "./thread-display";
 
 export default function Mail({
     defaultLayout = [20, 32, 48],
@@ -41,7 +44,7 @@ export default function Mail({
                         <AccountSwitcher isCollapsed={isCollapsed} />
                     </div>
                     <Separator />
-                    Sidebar
+                    <Sidebar isCollapsed={isCollapsed} />
                     <div className="flex-1"></div>
                     Ask AI
                 </div>
@@ -52,7 +55,7 @@ export default function Mail({
                 minSize={30}
             >
                 <Tabs defaultValue="inbox">
-                    <div className="flex items-center px-4 py-2">
+                    <div className="flex items-center px-4 pt-2">
                         <h1 className="text-xl font-bold">Inbox</h1>
                         <TabsList className="ml-auto">
                             <TabsTrigger value="inbox" className="text-zinc-600 dark:text-zinc-200">Inbox</TabsTrigger>
@@ -63,6 +66,14 @@ export default function Mail({
                     <Separator />
 
                     Search bar
+
+                    <TabsContent value="inbox">
+                        <ThreadList />
+                    </TabsContent>
+
+                    <TabsContent value="done">
+                        <ThreadList />
+                    </TabsContent>
                 </Tabs>
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -70,7 +81,7 @@ export default function Mail({
                 defaultSize={defaultLayout[2]}
                 minSize={30}
             >
-                Thread display
+                <ThreadDisplay />
             </ResizablePanel>
         </ResizablePanelGroup>
     </TooltipProvider>
