@@ -8,10 +8,30 @@ import { waitUntil } from "@vercel/functions";
 
 const AURINKO_SIGNING_SECRET = process.env.AURINKO_SIGNING_SECRET;
 
+// GET handler for webhook verification
+export const GET = async (req: NextRequest) => {
+    console.log("Webhook verification request received");
+    // Return 200 OK for verification requests
+    return new Response("Webhook endpoint is ready", { status: 200 });
+};
+
 export const POST = async (req: NextRequest) => {
     const timestamp = req.headers.get("X-Aurinko-Request-Timestamp");
     const signature = req.headers.get("X-Aurinko-Signature");
     const body = await req.text();
+
+    console.log("Webhook POST request received", {
+        hasTimestamp: !!timestamp,
+        hasSignature: !!signature,
+        hasBody: !!body,
+        bodyLength: body?.length || 0
+    });
+
+    // If this looks like a verification request (no Aurinko headers), return success
+    if (!timestamp && !signature) {
+        console.log("Received verification request, responding with 200");
+        return new Response("OK", { status: 200 });
+    }
 
     if (!timestamp || !signature || !body) {
         console.error("Missing required headers or body", { timestamp: !!timestamp, signature: !!signature, body: !!body });
