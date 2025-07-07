@@ -83,85 +83,21 @@ export class Account {
         }
     }
 
-    async listSubscriptions() {
-        try {
-            const res = await axios.get('https://api.aurinko.io/v1/subscriptions', {
+    async createSubscription() {
+        const webhookUrl = process.env.NEXT_PUBLIC_URL
+        const res = await axios.post('https://api.aurinko.io/v1/subscriptions',
+            {
+                resource: '/email/messages',
+                notificationUrl: webhookUrl + '/api/aurinko/webhook'
+            },
+            {
                 headers: {
                     'Authorization': `Bearer ${this.token}`,
                     'Content-Type': 'application/json'
                 }
-            })
-            return res.data
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error('Failed to list subscriptions:', JSON.stringify(error.response?.data, null, 2))
             }
-            throw error
-        }
-    }
-
-    async createSubscription() {
-        const webhookUrl = process.env.NEXT_PUBLIC_URL
-        console.log('Creating subscription with webhook URL:', webhookUrl)
-        
-        if (!webhookUrl) {
-            throw new Error('NEXT_PUBLIC_URL environment variable is not set')
-        }
-        
-        const targetNotificationUrl = webhookUrl + '/api/aurinko/webhook'
-        
-        // First check if a subscription already exists
-        try {
-            const existingSubscriptions = await this.listSubscriptions()
-            console.log('Existing subscriptions:', JSON.stringify(existingSubscriptions, null, 2))
-            
-            // Check if we already have a subscription for this webhook URL
-            const existingSubscription = existingSubscriptions.records.find((sub: any) => 
-                sub.notificationUrl === targetNotificationUrl && sub.resource === '/email/messages'
-            )
-            
-            if (existingSubscription) {
-                console.log('Subscription already exists:', existingSubscription)
-                return existingSubscription
-            }
-        } catch (error) {
-            console.log('Failed to list existing subscriptions, proceeding with creation:', error)
-        }
-        
-        const payload = {
-            resource: '/email/messages',
-            notificationUrl: targetNotificationUrl
-        }
-        
-        console.log('Subscription payload:', JSON.stringify(payload, null, 2))
-        
-        try {
-            const res = await axios.post('https://api.aurinko.io/v1/subscriptions',
-                payload,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${this.token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            )
-            console.log('Subscription created successfully:', res.data)
-            return res.data
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error('Subscription creation failed with status:', error.response?.status)
-                console.error('Error response data:', JSON.stringify(error.response?.data, null, 2))
-                console.error('Request config:', {
-                    url: error.config?.url,
-                    method: error.config?.method,
-                    headers: error.config?.headers,
-                    data: error.config?.data
-                })
-            } else {
-                console.error('Non-axios error during subscription creation:', error)
-            }
-            throw error
-        }
+        )
+        return res.data
     }
 
     async syncEmails() {
