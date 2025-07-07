@@ -132,9 +132,10 @@ Bu hata Aurinko OAuth bağlantısında yaşanır. Mailcow admin panelinde yapıl
 4. AURINKO SCOPES (Kod tarafında):
    Kullanılan scope'lar: "Mail.Read Mail.ReadWrite Mail.Send Mail.Drafts Mail.All"
    Bu scope'lar IMAP için uygun değil. IMAP için gereken scope'lar:
-   - "IMAP.Read"
-   - "IMAP.ReadWrite" 
-   - "SMTP.Send"
+   - "Mail.Read"
+   - "Mail.ReadWrite" 
+   - "Mail.Send"
+   - "Mail.Drafts"
 
 5. IMAP/SMTP PROTOKOL AYARLARI:
    - Admin Panel → System → Protocols

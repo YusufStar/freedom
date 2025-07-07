@@ -10,7 +10,7 @@ export const getAurinkoAuthUrl = async (serviceType: "Google" | "Office365" | "i
 
     // IMAP için farklı scope'lar kullan
     const scopes = serviceType === "IMAP"
-        ? "Mail.Read Mail.ReadWrite Mail.Send"
+        ? "Mail.Read Mail.ReadWrite Mail.Send Mail.Drafts"
         : "Mail.Read Mail.ReadWrite Mail.Send Mail.Drafts Mail.All";
 
     const params = new URLSearchParams({

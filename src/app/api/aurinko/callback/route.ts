@@ -22,19 +22,13 @@ export const GET = async (req: NextRequest) => {
 
     const accountDetails = await getAccountDetails(token.accessToken)
 
-    await db.account.upsert({
-        where: {
-            id: token.accountId.toString()
-        },
-        update: {
-            accessToken: token.accessToken,
-        },
-        create: {
+    await db.account.create({
+        data: {
             id: token.accountId.toString(),
             userId: userId,
             accessToken: token.accessToken,
             emailAddress: accountDetails.email,
-            name: accountDetails.name
+            name: accountDetails.name,
         }
     })
 
