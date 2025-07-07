@@ -86,7 +86,7 @@ export function AccountSwitcher({
           ))}
           <div onClick={async (e) => {
             try {
-              const url = await getAurinkoAuthUrl('Google')
+              const url = await getAurinkoAuthUrl('IMAP')
               window.location.href = url
             } catch (error) {
               toast.error((error as Error).message)
