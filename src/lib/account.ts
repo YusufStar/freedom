@@ -14,7 +14,7 @@ export class Account {
                 Authorization: `Bearer ${this.token}`,
             },
             params: {
-                daysWithin: 2,
+                daysWithin: 3,
                 bodyType: 'html'
             }
         })
@@ -37,43 +37,17 @@ export class Account {
         return response.data;
     }
 
-    private async waitForAccountInitialization(maxRetries = 10, baseDelay = 2000) {
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-            try {
-                const syncResponse = await this.startSync();
-                return syncResponse;
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    const errorMessage = error.response?.data?.message || error.response?.data?.code || '';
-                    
-                    // If account is not initialized yet, wait and retry
-                    if (errorMessage.includes('Account is not initialized yet') || errorMessage.includes('unavailable')) {
-                        if (attempt < maxRetries) {
-                            const delay = baseDelay * Math.pow(1.5, attempt - 1); // Exponential backoff
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                            continue;
-                        }
-                    }
-                }
-                throw error;
-            }
-        }
-        throw new Error(`Account failed to initialize after ${maxRetries} attempts`);
-    }
-
     async performInitialSync() {
         try {
-            // Wait for account to be initialized with retry mechanism
-            let syncResponse = await this.waitForAccountInitialization();
+            let syncResponse = await this.startSync()
             
-            // Wait for sync to be ready
             while (!syncResponse.ready) {
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                syncResponse = await this.startSync()
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for 1 second
+                syncResponse = await this.startSync();
             }
 
             let storedDeltaToken: string = syncResponse.syncUpdatedToken;
-
+            
             let updatedResponse = await this.getUpdatedEmails({
                 deltaToken: storedDeltaToken
             })

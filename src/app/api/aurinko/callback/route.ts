@@ -44,7 +44,7 @@ export const GET = async (req: NextRequest) => {
             try {
                 // Wait a bit before triggering sync to allow account to initialize
                 console.log('Waiting 5 seconds before triggering initial sync...');
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                await new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
                 
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/initial-sync`, {
                     accountId: token.accountId.toString(),

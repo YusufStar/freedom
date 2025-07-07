@@ -1,3 +1,5 @@
+"use client"
+
 import { Archive, ArchiveX, Clock, MoreVertical, Trash2 } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
@@ -27,23 +29,25 @@ const ThreadDisplay = () => {
                 <Clock className="size-4" />
             </Button>
             <div className="flex items-center ml-auto">
-            <DropdownMenu>
-                <DropdownMenuTrigger>
-                    <Button variant="ghost" size="icon" disabled={!threadId}>
-                        <MoreVertical className="size-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-                    <DropdownMenuItem>Star thread</DropdownMenuItem>
-                    <DropdownMenuItem>Add label</DropdownMenuItem>
-                    <DropdownMenuItem>Mute thread</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Button variant="ghost" size="icon" disabled={!threadId}>
+                            <MoreVertical className="size-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem>Mark as unread</DropdownMenuItem>
+                        <DropdownMenuItem>Star thread</DropdownMenuItem>
+                        <DropdownMenuItem>Add label</DropdownMenuItem>
+                        <DropdownMenuItem>Mute thread</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
 
         <Separator />
+
+        
     </div>
 }
 

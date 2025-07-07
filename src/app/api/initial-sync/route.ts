@@ -4,59 +4,42 @@ import { syncEmailsToDatabase } from "~/lib/sync-to-db";
 import { db } from "~/server/db";
 
 export const POST = async (req: NextRequest) => {
-    try {
-        const { accountId, userId } = await req.json();
-        if (!accountId || !userId) return NextResponse.json({ error: "Missing accountId or userId" }, { status: 400 });
+    const { accountId, userId } = await req.json();
+    if (!accountId || !userId) return NextResponse.json({ error: "Missing accountId or userId" }, { status: 400 });
 
-        const dbAccount = await db.account.findUnique({
-            where: {
-                id: accountId,
-                userId
-            }
-        })
-
-        if (!dbAccount) {
-            console.error(`Account not found for accountId: ${accountId}, userId: ${userId}`);
-            return NextResponse.json({ error: "Account not found" }, { status: 404 });
+    const dbAccount = await db.account.findUnique({
+        where: {
+            id: accountId,
+            userId
         }
+    })
 
-        const account = new Account(dbAccount.accessToken)
-        const response = await account.performInitialSync()
-        
-        if (!response) {
-            console.error("performInitialSync returned null/undefined");
-            return NextResponse.json({ error: "Failed to perform initial sync" }, { status: 500 })
-        }
-
-        const {emails, deltaToken} = response;
-
-        await db.account.update({
-            where: {
-                id: accountId,
-            },
-            data: {
-                nextDeltaToken: deltaToken
-            }
-        })
-
-        await syncEmailsToDatabase(emails, accountId)
-
-        return NextResponse.json({ 
-            success: true
-        }, { status: 200 })
-    } catch (error) {
-        console.error("Error in initial sync endpoint:", error);
-        
-        if (error instanceof Error) {
-            return NextResponse.json({ 
-                error: "Initial sync failed", 
-                details: error.message 
-            }, { status: 500 });
-        }
-        
-        return NextResponse.json({ 
-            error: "Initial sync failed", 
-            details: "Unknown error occurred" 
-        }, { status: 500 });
+    if (!dbAccount) {
+        console.error(`Account not found for accountId: ${accountId}, userId: ${userId}`);
+        return NextResponse.json({ error: "Account not found" }, { status: 404 });
     }
+
+    const account = new Account(dbAccount.accessToken)
+    const response = await account.performInitialSync()
+    if (!response) return NextResponse.json({ error: "FAILED_TO_SYNC" }, { status: 500 });
+
+    const { emails, deltaToken } = response;
+
+    await syncEmailsToDatabase(emails, accountId)
+
+    await db.account.update({
+        where: {
+            accessToken: dbAccount.accessToken
+        },
+        data: {
+            nextDeltaToken: deltaToken
+        }
+    })
+
+    console.log('sync complete', deltaToken)
+
+    return NextResponse.json({
+        success: true,
+        deltaToken
+    }, { status: 200 })
 }
