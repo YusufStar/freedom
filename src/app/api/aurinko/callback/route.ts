@@ -6,6 +6,7 @@ import axios from "axios";
 import { type NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
     const { userId } = await auth()
     if (!userId) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
 
@@ -17,13 +18,18 @@ export const GET = async (req: NextRequest) => {
     const token = await exchangeAurinkoCodeForToken(code as string)
     if (!token) return NextResponse.json({ error: "Failed to fetch token" }, { status: 400 });
     const accountDetails = await getAccountDetails(token.accessToken)
-    await db.account.create({
-        data: {
+    console.log('accountDetails', userId, token.accountId)
+    await db.account.upsert({
+        where: { id: token.accountId.toString() },
+        create: {
             id: token.accountId.toString(),
             userId,
             accessToken: token.accessToken,
             emailAddress: accountDetails.email,
             name: accountDetails.name
+        },
+        update: {
+            accessToken: token.accessToken,
         }
     })
     waitUntil(
