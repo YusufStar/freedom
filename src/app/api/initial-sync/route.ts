@@ -7,6 +7,7 @@ export const POST = async (req: NextRequest) => {
     await new Promise(resolve => setTimeout(resolve, 10000)); 
 
     const { accountId, userId } = await req.json();
+    console.log('initial sync', accountId, userId)
     if (!accountId || !userId) return NextResponse.json({ error: "Missing accountId or userId" }, { status: 400 });
 
     const dbAccount = await db.account.findUnique({
