@@ -20,6 +20,7 @@ export const POST = async (req: NextRequest) => {
     }
 
     const account = new Account(dbAccount.accessToken)
+    await account.createSubscription()
     const response = await account.performInitialSync()
     if (!response) return NextResponse.json({ error: "FAILED_TO_SYNC" }, { status: 500 });
 
