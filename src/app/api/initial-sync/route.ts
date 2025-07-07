@@ -4,6 +4,8 @@ import { syncEmailsToDatabase } from "~/lib/sync-to-db";
 import { db } from "~/server/db";
 
 export const POST = async (req: NextRequest) => {
+    await new Promise(resolve => setTimeout(resolve, 10000)); 
+
     const { accountId, userId } = await req.json();
     if (!accountId || !userId) return NextResponse.json({ error: "Missing accountId or userId" }, { status: 400 });
 
