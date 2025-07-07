@@ -19,6 +19,7 @@ function safeParseDate(dateString?: string, fallback?: string): Date {
 export async function syncEmailsToDatabase(emails: EmailMessage[], accountId: string) {
     try {
         for (const [index, email] of emails.entries()) {
+            console.log('upserting email', index, email.threadId)
             await upsertEmail(email, index, accountId);
         }
     } catch (error) {
