@@ -116,7 +116,7 @@ export class Account {
             console.log('Existing subscriptions:', JSON.stringify(existingSubscriptions, null, 2))
             
             // Check if we already have a subscription for this webhook URL
-            const existingSubscription = existingSubscriptions.find((sub: any) => 
+            const existingSubscription = existingSubscriptions.records.find((sub: any) => 
                 sub.notificationUrl === targetNotificationUrl && sub.resource === '/email/messages'
             )
             
