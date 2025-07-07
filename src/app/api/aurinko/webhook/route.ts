@@ -11,11 +11,6 @@ const AURINKO_SIGNING_SECRET = process.env.AURINKO_SIGNING_SECRET;
 export const POST = async (req: NextRequest) => {
     console.log("POST request received");
     const query = req.nextUrl.searchParams;
-    const validationToken = query.get("validationToken");
-    if (validationToken) {
-        console.log("Validation token received, returning token:", validationToken);
-        return new Response(validationToken, { status: 200 });
-    }
 
     console.log("Processing webhook notification...");
     const timestamp = req.headers.get("X-Aurinko-Request-Timestamp");
