@@ -23,7 +23,16 @@ export const POST = async (req: NextRequest) => {
     }
 
     const account = new Account(dbAccount.accessToken)
-    await account.createSubscription()
+    
+    // Try to create subscription, but don't fail if it doesn't work
+    try {
+        await account.createSubscription()
+        console.log('Subscription created successfully')
+    } catch (error) {
+        console.error('Failed to create subscription, but continuing with sync:', error)
+        // Continue with sync even if subscription creation fails
+    }
+    
     const response = await account.performInitialSync()
     if (!response) return NextResponse.json({ error: "FAILED_TO_SYNC" }, { status: 500 });
 
