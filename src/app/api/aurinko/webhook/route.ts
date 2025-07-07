@@ -9,10 +9,6 @@ import { waitUntil } from "@vercel/functions";
 const AURINKO_SIGNING_SECRET = process.env.AURINKO_SIGNING_SECRET;
 
 export const POST = async (req: NextRequest) => {
-    console.log("POST request received");
-    const query = req.nextUrl.searchParams;
-
-    console.log("Processing webhook notification...");
     const timestamp = req.headers.get("X-Aurinko-Request-Timestamp");
     const signature = req.headers.get("X-Aurinko-Signature");
     const body = await req.text();
