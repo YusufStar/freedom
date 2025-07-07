@@ -17,17 +17,13 @@ export const GET = async (req: NextRequest) => {
     const token = await exchangeAurinkoCodeForToken(code as string)
     if (!token) return NextResponse.json({ error: "Failed to fetch token" }, { status: 400 });
     const accountDetails = await getAccountDetails(token.accessToken)
-    await db.account.upsert({
-        where: { id: token.accountId.toString() },
-        create: {
+    await db.account.create({
+        data: {
             id: token.accountId.toString(),
             userId,
             accessToken: token.accessToken,
             emailAddress: accountDetails.email,
             name: accountDetails.name
-        },
-        update: {
-            accessToken: token.accessToken,
         }
     })
     waitUntil(
