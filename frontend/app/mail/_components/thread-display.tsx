@@ -49,7 +49,7 @@ export function ThreadDisplay({ selectedId }: ThreadDisplayProps) {
 
   const {
     data: email,
-    isFetching,
+    isLoading,
   } = useQuery<EmailDetail | null>({
     queryKey: ["email", selectedId],
     enabled: !!selectedId && !!accountId,
@@ -82,7 +82,7 @@ export function ThreadDisplay({ selectedId }: ThreadDisplayProps) {
     )
   }
 
-  if (isFetching || !email) {
+  if (isLoading || !email) {
     return renderSkeleton();
   }
 

@@ -40,12 +40,12 @@ export function ThreadList({ selectedId, onSelect }: ThreadListProps) {
 
   const {
     data: emails,
-    isFetching
+    isLoading,
   } = useQuery<Email[]>({
     queryKey: ["emails", accountId],
     enabled: !!accountId,
     queryFn: () => apiRequest.get<Email[]>(`/emails?accountId=${accountId}&limit=100&offset=0`),
-    refetchInterval: 5000,
+    refetchInterval: 2000, // 2 seconds
   });
 
   console.log(emails)
@@ -117,7 +117,7 @@ export function ThreadList({ selectedId, onSelect }: ThreadListProps) {
         <div className="sticky top-0 bg-background pb-3 pt-4 z-10">
           <Input placeholder="Search…" {...register("search")}/>
         </div>
-        {(!emails || isFetching) && renderSkeleton()}
+        {(!emails || isLoading) && renderSkeleton()}
         {emails && Object.entries(groupedThreads)
           .sort((a, b) => (a[0] > b[0] ? -1 : 1))
           .map(([date, list]) => (

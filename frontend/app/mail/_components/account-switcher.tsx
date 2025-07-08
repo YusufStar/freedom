@@ -1,13 +1,19 @@
 "use client"
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocalStorage } from "usehooks-ts";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/axios";
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger, AlertDialogCancel, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { ApiError } from "@/lib/axios";
+import { z } from "zod";
 
 interface MailAccount {
     id: string;
@@ -20,7 +26,7 @@ interface AccountSwitcherProps {
 }
 
 export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
-    const router = useRouter();
+    const queryClient = useQueryClient();
 
     // Local storage to persist selected account
     const [accountId, setAccountId] = useLocalStorage<string | null>("accountId", null);
@@ -49,9 +55,43 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
         setAccountId(value);
     };
 
-    const handleAddAccount = () => {
-        router.push("/mail/connect");
-    };
+    // Alert dialog open state managed by Radix via Trigger; internal tab state
+    const [tab, setTab] = React.useState<string>("connect");
+
+    // form states
+    const [connectLocalPart, setConnectLocalPart] = React.useState("");
+    const [connectPassword, setConnectPassword] = React.useState("");
+    const [connectError, setConnectError] = React.useState<string | null>(null);
+    const [createLocalPart, setCreateLocalPart] = React.useState("");
+    const [createPassword, setCreatePassword] = React.useState("");
+    const [createError, setCreateError] = React.useState<string | null>(null);
+
+    const connectMutation = useMutation({
+        mutationFn: () => {
+            const email = `${connectLocalPart}@yusufstar.com`;
+            return apiRequest.post("/mailbox/connect", { email, password: connectPassword });
+        },
+        onSuccess: () => {
+            toast.success("Mailbox connected successfully");
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
+        },
+        onError: (err: unknown) => {
+            const message = err instanceof ApiError ? err.message : "Connection failed";
+            toast.error(message);
+        }
+    });
+
+    const createMutation = useMutation({
+        mutationFn: () => apiRequest.post("/mailbox/create", { localPart: createLocalPart, password: createPassword, name: createLocalPart }),
+        onSuccess: () => {
+            toast.success("Mailbox created successfully");
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
+        },
+        onError: (err: unknown) => {
+            const message = err instanceof ApiError ? err.message : "Creation failed";
+            toast.error(message);
+        }
+    });
 
     if (isLoading) return <div className="text-sm text-muted-foreground">Loading accounts...</div>;
     if (error) {
@@ -89,12 +129,100 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
                             </div>
                         </SelectItem>
                     ))}
-                    <div
-                        onClick={handleAddAccount}
-                        className="relative flex hover:bg-accent w-full cursor-pointer items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
-                    >
-                        <Plus className="size-4 mr-1" /> Add account
-                    </div>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <div
+                                className="relative flex hover:bg-accent w-full cursor-pointer items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground"
+                            >
+                                <Plus className="size-4 mr-1" /> Add account
+                            </div>
+                        </AlertDialogTrigger>
+
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Add account</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Add a new account to your mailbox.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <Tabs value={tab} onValueChange={setTab} className="w-full">
+                                <TabsList className="mb-4 flex justify-center w-full">
+                                    <TabsTrigger value="connect">Connect</TabsTrigger>
+                                    <TabsTrigger value="create">Create</TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value="connect">
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            // validation
+                                            const schema = z.string().min(3).max(50).regex(/^[a-zA-Z0-9._-]+$/);
+                                            const result = schema.safeParse(connectLocalPart);
+                                            if (!result.success) {
+                                                setConnectError("Only letters, numbers, dots, underscores and hyphens allowed and 3-50 chars");
+                                                return;
+                                            }
+                                            setConnectError(null);
+                                            connectMutation.mutate();
+                                        }}
+                                        className="space-y-4"
+                                    >
+                                        <div>
+                                            <label className="block text-sm mb-1" htmlFor="connect-local">Username</label>
+                                            <div className="flex gap-2 items-center">
+                                                <Input id="connect-local" type="text" value={connectLocalPart} onChange={(e) => setConnectLocalPart(e.target.value)} required />
+                                                <span className="text-sm">@yusufstar.com</span>
+                                            </div>
+                                            {connectError && <p className="text-xs text-destructive mt-1">{connectError}</p>}
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm mb-1" htmlFor="connect-pass">Password</label>
+                                            <Input id="connect-pass" type="password" value={connectPassword} onChange={(e) => setConnectPassword(e.target.value)} required />
+                                        </div>
+                                        <div className="flex justify-end gap-2">
+                                            <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+                                            <Button type="submit" disabled={connectMutation.isPending}>{connectMutation.isPending ? "Connecting…" : "Connect"}</Button>
+                                        </div>
+                                    </form>
+                                </TabsContent>
+
+                                <TabsContent value="create">
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            const schema = z.string().min(3).max(50).regex(/^[a-zA-Z0-9._-]+$/);
+                                            const result = schema.safeParse(createLocalPart);
+                                            if (!result.success) {
+                                                setCreateError("Only letters, numbers, dots, underscores and hyphens allowed and 3-50 chars");
+                                                return;
+                                            }
+                                            setCreateError(null);
+                                            createMutation.mutate();
+                                        }}
+                                        className="space-y-4"
+                                    >
+                                        <div>
+                                            <label className="block text-sm mb-1" htmlFor="create-email">Username</label>
+                                            <div className="flex gap-2 items-center">
+                                                <Input id="create-email" placeholder="john.doe" type="text" value={createLocalPart} onChange={(e) => setCreateLocalPart(e.target.value)} required />
+                                                <span className="text-sm">@yusufstar.com</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm mb-1" htmlFor="create-pass">Password</label>
+                                            <Input id="create-pass" type="password" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
+                                        </div>
+                                        {createError && <p className="text-xs text-destructive">{createError}</p>}
+                                        <div className="flex justify-end gap-2">
+                                            <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+                                            <Button type="submit" disabled={createMutation.isPending}>{createMutation.isPending ? "Creating…" : "Create"}</Button>
+                                        </div>
+                                    </form>
+                                </TabsContent>
+                            </Tabs>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </SelectContent>
             </Select>
         </div>

@@ -24,8 +24,8 @@ export default function SideBar({ isCollapsed }: Props) {
   const [tab] = useLocalStorage("yusufstar-tab", "inbox")
   const [accountId] = useLocalStorage("accountId", "")
 
-  // Re-fetch counts every 5 seconds
-  const refetchInterval = 5000
+  // Re-fetch counts every 2 seconds
+  const refetchInterval = 2000
 
   const getCount = (folder: string) =>
     api.mail.getThreadCount({ accountId, folder })
