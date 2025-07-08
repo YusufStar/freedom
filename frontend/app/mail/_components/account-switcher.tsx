@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/axios";
-import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogClose, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -142,6 +142,13 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
                         </DialogTrigger>
 
                         <DialogContent onPointerDownOutside={(e)=>e.preventDefault()}>
+                            <DialogHeader>
+                                <DialogTitle>Add account</DialogTitle>
+                                <DialogDescription>
+                                    Add a new account to your mailbox.
+                                </DialogDescription>
+                            </DialogHeader>
+
                             <Tabs value={tab} onValueChange={setTab} className="w-full" defaultValue="connect">
                                 <TabsList className="mb-4 flex justify-center w-full">
                                     <TabsTrigger value="connect">Connect</TabsTrigger>
