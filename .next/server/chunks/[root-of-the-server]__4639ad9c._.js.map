@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 78, "column": 0}, "map": {"version":3,"sources":["file:///Users/yusufstar/Desktop/freedom/src/app/api/aurinko/callback/route.ts"],"sourcesContent":["// /api/aurinko/callback\n\nimport { auth } from \"@clerk/nextjs/server\"\nimport { NextResponse } from \"next/server\"\n\nexport const GET = async (req: Request) => {\n    const { userId } = await auth()\n    console.log(\"userId: \", userId)\n\n    return NextResponse.json({ message: \"Callback received\" })\n}"],"names":[],"mappings":"AAAA,wBAAwB;;;;AAExB;AACA;;;AAEO,MAAM,MAAM,OAAO;IACtB,MAAM,EAAE,MAAM,EAAE,GAAG,MAAM,CAAA,GAAA,qLAAA,CAAA,OAAI,AAAD;IAC5B,QAAQ,GAAG,CAAC,YAAY;IAExB,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;QAAE,SAAS;IAAoB;AAC5D","debugId":null}}]
+}

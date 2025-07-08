@@ -1,0 +1,61 @@
+{
+  "node": {
+    "7f3f62254c027ad46395e353fca8085cf3f1d5857d": {
+      "workers": {
+        "app/email/page": {
+          "moduleId": "[project]/.next-internal/server/app/email/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/lib/aurinko.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/email/page": "action-browser"
+      }
+    },
+    "7f841b99492cf14fe267e37e26af39813a580b0782": {
+      "workers": {
+        "app/email/page": {
+          "moduleId": "[project]/.next-internal/server/app/email/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/lib/aurinko.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/email/page": "action-browser"
+      }
+    },
+    "7f858b70cb6a8bdd5152b52446f4dbe1ddac52414e": {
+      "workers": {
+        "app/email/page": {
+          "moduleId": "[project]/.next-internal/server/app/email/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/lib/aurinko.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/email/page": "action-browser"
+      }
+    },
+    "7fe79cbf57e3828e7bc417322d5c0f319cc2fd0172": {
+      "workers": {
+        "app/email/page": {
+          "moduleId": "[project]/.next-internal/server/app/email/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/lib/aurinko.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/email/page": "action-browser"
+      }
+    },
+    "7ff855c77e0c56110e3f8bc9ba39d0ed751f1d63b7": {
+      "workers": {
+        "app/email/page": {
+          "moduleId": "[project]/.next-internal/server/app/email/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/lib/aurinko.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/email/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "Dn9ST/GIfy0/akbBTNJCZ50TYdFKwVHKPfLpeTR8Q5I="
+}

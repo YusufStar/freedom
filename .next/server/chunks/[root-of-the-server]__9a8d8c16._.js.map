@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 54, "column": 0}, "map": {"version":3,"sources":["file:///Users/yusufstar/Desktop/freedom/src/app/api/clerk/webhook/route.ts"],"sourcesContent":["// /api/clerk/webhook\n\nexport const POST = async (req: Request) => {\n    const { data } = await req.json()\n\n    console.log(data)\n}"],"names":[],"mappings":"AAAA,qBAAqB;;;;AAEd,MAAM,OAAO,OAAO;IACvB,MAAM,EAAE,IAAI,EAAE,GAAG,MAAM,IAAI,IAAI;IAE/B,QAAQ,GAAG,CAAC;AAChB","debugId":null}}]
+}

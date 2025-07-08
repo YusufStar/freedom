@@ -1,0 +1,12 @@
+{
+  "[project]/src/app/email/mail.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/src/app/email/mail.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/src_1ec5e47b._.js",
+      "static/chunks/node_modules_framer-motion_dist_es_24e93cb0._.js",
+      "static/chunks/node_modules_motion-dom_dist_es_fa3ea29e._.js",
+      "static/chunks/node_modules_11e7f12a._.js",
+      "static/chunks/src_app_email_mail_tsx_fda91601._.js"
+    ]
+  }
+}

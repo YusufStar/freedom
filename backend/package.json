@@ -1,0 +1,27 @@
+{
+  "name": "freedom-mail-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot index.ts",
+    "start": "bun index.ts",
+    "type-check": "bunx tsc --noEmit",
+    "lint": "bunx eslint . --ext .ts --fix"
+  },
+  "dependencies": {
+    "argon2": "^0.31.2",
+    "cors": "^2.8.5",
+    "cron": "^3.5.0",
+    "imapflow": "^1.0.189",
+    "jose": "^5.10.0",
+    "mailparser": "^3.7.4",
+    "nodemailer": "^6.10.1",
+    "zod": "^3.25.75"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.18",
+    "@types/cors": "^2.8.19",
+    "@types/mailparser": "^3.4.6",
+    "@types/nodemailer": "^6.4.17"
+  }
+}

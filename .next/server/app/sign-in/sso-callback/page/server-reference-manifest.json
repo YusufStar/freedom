@@ -1,0 +1,49 @@
+{
+  "node": {
+    "7f3f62254c027ad46395e353fca8085cf3f1d5857d": {
+      "workers": {
+        "app/sign-in/sso-callback/page": {
+          "moduleId": "[project]/.next-internal/server/app/sign-in/sso-callback/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/sign-in/sso-callback/page": "action-browser"
+      }
+    },
+    "7f841b99492cf14fe267e37e26af39813a580b0782": {
+      "workers": {
+        "app/sign-in/sso-callback/page": {
+          "moduleId": "[project]/.next-internal/server/app/sign-in/sso-callback/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/sign-in/sso-callback/page": "action-browser"
+      }
+    },
+    "7f858b70cb6a8bdd5152b52446f4dbe1ddac52414e": {
+      "workers": {
+        "app/sign-in/sso-callback/page": {
+          "moduleId": "[project]/.next-internal/server/app/sign-in/sso-callback/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/sign-in/sso-callback/page": "action-browser"
+      }
+    },
+    "7fe79cbf57e3828e7bc417322d5c0f319cc2fd0172": {
+      "workers": {
+        "app/sign-in/sso-callback/page": {
+          "moduleId": "[project]/.next-internal/server/app/sign-in/sso-callback/page/actions.js { ACTIONS_MODULE0 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/sign-in/sso-callback/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}
