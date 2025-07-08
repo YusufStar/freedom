@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/axios";
-import { AlertDialog, AlertDialogContent, AlertDialogTrigger, AlertDialogCancel, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,7 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
 
     // Alert dialog open state managed by Radix via Trigger; internal tab state
     const [tab, setTab] = React.useState<string>("connect");
+    const [isOpen, setIsOpen] = React.useState(false);
 
     // form states
     const [connectLocalPart, setConnectLocalPart] = React.useState("");
@@ -74,6 +75,7 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
         onSuccess: () => {
             toast.success("Mailbox connected successfully");
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
+            setIsOpen(false);
         },
         onError: (err: unknown) => {
             const message = err instanceof ApiError ? err.message : "Connection failed";
@@ -86,6 +88,7 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
         onSuccess: () => {
             toast.success("Mailbox created successfully");
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
+            setIsOpen(false);
         },
         onError: (err: unknown) => {
             const message = err instanceof ApiError ? err.message : "Creation failed";
@@ -129,24 +132,17 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
                             </div>
                         </SelectItem>
                     ))}
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
+                    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                        <DialogTrigger asChild>
                             <div
                                 className="relative flex hover:bg-accent w-full cursor-pointer items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground"
                             >
                                 <Plus className="size-4 mr-1" /> Add account
                             </div>
-                        </AlertDialogTrigger>
+                        </DialogTrigger>
 
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Add account</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Add a new account to your mailbox.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-
-                            <Tabs value={tab} onValueChange={setTab} className="w-full">
+                        <DialogContent onPointerDownOutside={(e)=>e.preventDefault()}>
+                            <Tabs value={tab} onValueChange={setTab} className="w-full" defaultValue="connect">
                                 <TabsList className="mb-4 flex justify-center w-full">
                                     <TabsTrigger value="connect">Connect</TabsTrigger>
                                     <TabsTrigger value="create">Create</TabsTrigger>
@@ -181,7 +177,7 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
                                             <Input id="connect-pass" type="password" value={connectPassword} onChange={(e) => setConnectPassword(e.target.value)} required />
                                         </div>
                                         <div className="flex justify-end gap-2">
-                                            <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+                                            <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
                                             <Button type="submit" disabled={connectMutation.isPending}>{connectMutation.isPending ? "Connecting…" : "Connect"}</Button>
                                         </div>
                                     </form>
@@ -215,14 +211,14 @@ export function AccountSwitcher({ isCollapsed }: AccountSwitcherProps) {
                                         </div>
                                         {createError && <p className="text-xs text-destructive">{createError}</p>}
                                         <div className="flex justify-end gap-2">
-                                            <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+                                            <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
                                             <Button type="submit" disabled={createMutation.isPending}>{createMutation.isPending ? "Creating…" : "Create"}</Button>
                                         </div>
                                     </form>
                                 </TabsContent>
                             </Tabs>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                        </DialogContent>
+                    </Dialog>
                 </SelectContent>
             </Select>
         </div>
