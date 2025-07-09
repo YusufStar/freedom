@@ -48,8 +48,6 @@ export function ThreadList({ selectedId, onSelect }: ThreadListProps) {
     refetchInterval: 2000, // 2 seconds
   });
 
-  console.log(emails)
-
   // convert to thread-like grouping by subject (simplified)
   const threads = useMemo(() => {
     if (!emails) return [] as { id: string; subject: string; lastMessageDate: Date; snippet: string; sender: string; }[];

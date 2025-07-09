@@ -116,20 +116,21 @@ export class MailSyncService {
           throw new Error('Failed to select INBOX mailbox');
         }
 
-        // Determine search criteria based on last sync
-        let searchCriteria: any;
-        if (account.last_synced_at) {
-          const lastSyncDate = new Date(account.last_synced_at);
-          searchCriteria = { since: lastSyncDate };
-        } else {
-          searchCriteria = { all: true };
+        // If mailbox empty, skip to avoid invalid FETCH
+        if (client.mailbox.exists === 0) {
+          console.log(`No messages found in ${account.email}, skipping.`);
+          return messagesProcessed;
         }
 
-        // Search for messages
-        console.log(`Searching for messages in ${account.email} since ${account.last_synced_at || 'beginning'}`);
+        // For now, let's use a simpler approach: fetch recent messages (last 100)
+        // This avoids issues with 'since' search not working properly on some IMAP servers
+        const totalMessages = client.mailbox.exists;
+        const startSeq = Math.max(1, totalMessages - 99); // Get last 100 messages
         
-        // Fetch messages based on search criteria
-        for await (const message of client.fetch(searchCriteria, { 
+        console.log(`Fetching messages ${startSeq}-${totalMessages} in ${account.email} (total: ${totalMessages})`);
+        
+        // Fetch recent messages by sequence number
+        for await (const message of client.fetch(`${startSeq}:*`, { 
           source: true,
           envelope: true,
           bodyStructure: true,
@@ -173,11 +174,30 @@ export class MailSyncService {
 
   // Save email to database
   private async saveEmail(accountId: string, parsedMail: any): Promise<void> {
-    const messageId = parsedMail.messageId || generateId();
+    // Try to get the real message ID from various sources
+    let messageId = parsedMail.messageId;
+    
+    // If no messageId in parsed mail, try headers
+    if (!messageId && parsedMail.headers) {
+      messageId = parsedMail.headers.get('message-id') || 
+                 parsedMail.headers.get('Message-ID') ||
+                 parsedMail.headers.get('Message-Id');
+    }
+    
+    // If still no messageId, create a deterministic ID based on email content
+    if (!messageId) {
+      const from = this.extractAddress(parsedMail.from);
+      const subject = parsedMail.subject || '';
+      const date = parsedMail.date ? parsedMail.date.toISOString() : new Date().toISOString();
+      // Create a hash-like deterministic ID
+      messageId = `${from}:${subject}:${date}`.replace(/[^a-zA-Z0-9@.-]/g, '_');
+      console.warn(`No messageId found, using deterministic ID: ${messageId}`);
+    }
     
     // Check if email already exists
     const existing = queries.emails.findByMessageId.get({ $message_id: messageId });
     if (existing) {
+      console.log(`Email already exists: ${messageId}`);
       return;
     }
 

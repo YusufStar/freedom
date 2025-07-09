@@ -23,7 +23,6 @@ export default function SideBar({ isCollapsed }: Props) {
     setMounted(true)
   }, [])
 
-  const [tab] = useLocalStorage("yusufstar-tab", "inbox")
   const [accountId] = useLocalStorage("accountId", "")
 
   // Re-fetch counts every 2 seconds
@@ -68,31 +67,30 @@ export default function SideBar({ isCollapsed }: Props) {
           title: "Inbox",
           label: inboxCount?.toString() || "0",
           icon: Inbox,
-          variant: tab === "inbox" ? "default" : "ghost",
+          path: "/mail",
         },
         {
           title: "Drafts",
           label: draftsCount?.toString() || "0",
           icon: File,
-          variant: tab === "drafts" ? "default" : "ghost",
+          path: "/mail",
         },
         {
           title: "Sent",
           label: sentCount?.toString() || "0",
           icon: Send,
-          variant: tab === "sent" ? "default" : "ghost",
+          path: "/mail",
         },
         {
           title: "Trash",
           label: "0",
+          path: "/mail",
           icon: Trash,
-          variant: tab === "trash" ? "default" : "ghost",
         },
         {
           title: "Calendar",
           icon: Calendar,
           path: "/mail/calendar",
-          variant: tab === "calendar" ? "default" : "ghost",
         },
       ]}
     />
